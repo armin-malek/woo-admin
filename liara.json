@@ -1,0 +1,9 @@
+{
+  "platform": "docker",
+  "disks": [
+    {
+      "name": "next-cache",
+      "mountTo": "/app/.next/"
+    }
+  ]
+}
