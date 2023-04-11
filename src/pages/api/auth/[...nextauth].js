@@ -11,22 +11,22 @@ export const authOptions = {
   callbacks: {
     jwt(params) {
       //update token
-      console.log("jwt", params);
+      // console.log("jwt", params);
       //params.token.name = params.user.name;
       //params.token.id = params.user.id;
-      console.log("jwt done");
+      // console.log("jwt done");
 
       return params.token;
     },
     async session({ session, token, user }) {
       // Send properties to the client, like an access_token and user id from a provider.
       //console.log("sess token", token);
-      console.log("sess", session, token, user);
+      // console.log("sess", session, token, user);
 
       session.user.id = token.id;
 
       //delete session.image;
-      console.log("sess done");
+      // console.log("sess done");
       return session;
     },
     async redirect({ url, baseUrl }) {

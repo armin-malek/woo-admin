@@ -1,22 +1,26 @@
 import DropdownTreeSelect from "react-dropdown-tree-select";
 import "react-dropdown-tree-select/dist/styles.css";
 import { useState, useEffect } from "react";
+import CheckboxTree from "react-checkbox-tree";
 
-export default function ProductCategorySelect({
+export default function ProductCategoryTree({
   cats,
-  selectedCats,
-  checkedList,
+  setCategories,
+  initialCats,
+  // onCatChange,
 }) {
   const [data, setData] = useState();
+  const [checked, setChecked] = useState([]);
+  const [expanded, setExpanded] = useState([]);
 
   const onCatChange = (currentNode, selectedNodes) => {
-    // console.log("currentNode", currentNode);
-    // console.log("selecteds", selectedNodes);
+    console.log("currentNode", currentNode);
+    console.log("selecteds", selectedNodes);
 
     const selectedIDs = selectedNodes.map((x) => x.catid);
-    // console.log("selectedIDs", selectedIDs);
-    selectedCats.current = selectedIDs;
-    // console.log("done");
+    console.log("selectedIDs", selectedIDs);
+    setCategories(selectedIDs);
+    console.log("done");
   };
 
   useEffect(() => {
@@ -25,88 +29,40 @@ export default function ProductCategorySelect({
     let parents = cats.filter((x) => x.parent == 0);
     parents.map((parent) => {
       let tmp = {
-        catid: parent.id,
+        value: parent.id,
         label: parent.name,
         children: [],
-        checked: checkedList?.includes(parent.id),
+        // checked: initialCats?.includes(parent.id),
       };
       let children = cats.filter((x) => x.parent == parent.id);
       children?.map((item) => {
         tmp.children.push({
-          catid: item.id,
+          value: item.id,
           label: item.name,
           children: [],
-          checked: checkedList?.includes(item.id),
+          //checked: initialCats?.includes(item.id),
         });
       });
       newData.push(tmp);
     });
     setData(newData);
-  }, [cats, checkedList]);
+  }, [cats]);
 
-  // useEffect(() => {
-  //   console.log("data", data);
-  // }, [data]);
+  useEffect(() => {
+    console.log("data", data);
+  }, [data]);
 
   return (
     <>
       {data && (
-        <DropdownTreeSelect
-          data={data}
-          onChange={onCatChange}
-          mode="hierarchical"
-          className="bootstrap-demo"
-          texts={{ placeholder: "جستجو ..." }}
+        <CheckboxTree
+          nodes={data}
+          checked={checked}
+          expanded={expanded}
+          onCheck={(e) => setChecked({ e })}
+          onExpand={(e) => setExpanded({ e })}
         />
       )}
-
-      <style>{`
-        /* bootstrap-demo is a custom classname to increases the specificity of our styles. It can be anything. 
-       * The idea is that it is easy to extend/override builtin styles with very little effort.
-       */
-        .bootstrap-demo .dropdown-trigger {
-          border-radius: 0.25rem;
-        }
-
-        .bootstrap-demo .dropdown-trigger > span:after {
-          font-size: 12px;
-          color: #555;
-        }
-
-        .bootstrap-demo .toggle {
-          font: normal normal normal 12px/1 FontAwesome;
-          color: #555;
-        }
-
-        .bootstrap-demo .toggle.collapsed::after {
-          content: "\f067";
-        }
-
-        .bootstrap-demo .toggle.expanded::after {
-          content: "\f068";
-        }
-
-        .bootstrap-demo .root {
-          padding: 0px;
-          margin: 0px;
-        }
-
-        input.checkbox-item {
-          min-width: 30px !important;
-        }
-
-        input.search {
-          border-radius: 0px !important;
-          padding: 0px !important;
-        }
-        .node[aria-level="2"] {
-          background-color: #dae2f3b5;
-        }
-        .node[aria-level="2"]::before {
-          content:"-";
-          margin-right: 14px;
-        }
-      `}</style>
     </>
   );
 }

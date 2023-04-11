@@ -1,54 +1,45 @@
 import { useRouter } from "next/router";
 import LayoutAdmin from "../../../components/LayoutAdmin";
 import woo from "../../../server/common/woocommerce";
-import {
-  faSave,
-  faTrash,
-  faUpload,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Modal from "react-bootstrap/Modal";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { Formik, Form, Field } from "formik";
-import Image from "next/image";
 import axios from "axios";
 import ProductCategorySelect from "../../../components/panel/products/ProductCategorySelect";
+import ImageSelector from "../../../components/ImageSelector";
+import Swal from "sweetalert2";
 
 const Page = ({ product, cats }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [productImage, setProductImage] = useState();
-  const [isPosting, setIsPosting] = useState(false);
-  const refFileInput = useRef();
+  //const [selectedFile, setSelectedFile] = useState(null);
+  // const [productImage, setProductImage] = useState();
 
-  useEffect(() => {
-    if (product?.Image) setProductImage(product?.Image);
-  }, [product]);
+  const [productImage, setProductImage] = useState();
+
+  const [isPosting, setIsPosting] = useState(false);
+  const selectedCats = useRef(product?.categories?.map((x) => x.id));
+  const router = useRouter();
 
   async function formSubmit(values) {
     try {
       setIsPosting(true);
-      var bodyFormData = new FormData();
-      Object.keys(values).forEach((key) => {
-        bodyFormData.append(key, values[key]);
+
+      console.log("selectedFile", productImage);
+      // console.log("file", file);
+      const { data } = await axios.post("/api/panel/products/update", {
+        productID: product.id,
+        img: productImage,
+        ...values,
+        cats: selectedCats.current,
       });
-      bodyFormData.append("image", selectedFile);
-      bodyFormData.append("productId", product.id);
-      let response = await axios({
-        method: "post",
-        url: "/api/cp/admin/products/update-product",
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      response = response.data;
       setIsPosting(false);
-      if (response.status != true) {
-        toast(response.msg, { type: "error" });
+      if (data.status != true) {
+        toast(data.msg, { type: "error" });
         return;
       }
-      toast(response.msg, { type: "success" });
-      CleanUp();
+      toast(data.msg, { type: "success" });
+      console.log("sel", selectedCats.current);
     } catch (err) {
       toast("خطایی رخ داد", { type: "error" });
       setIsPosting(false);
@@ -58,54 +49,40 @@ const Page = ({ product, cats }) => {
 
   async function submitRemove() {
     try {
+      let force = false;
+      const dialogResult = await Swal.fire({
+        title: "توجه",
+        text: "نوع حذف را انتخاب کنید",
+        customClass: "font-fa",
+        //icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: "انتقال به زباله دان",
+        denyButtonText: "حذف کامل",
+        color: "red",
+      });
+
+      if (!dialogResult.isConfirmed) {
+        force = true;
+      }
       setIsPosting(true);
 
-      let response = await axios({
-        method: "post",
-        url: "/api/cp/admin/products/remove-product",
-        data: { productId: product.id },
+      const { data } = await axios.post("/api/panel/products/remove", {
+        productID: product.id,
+        force,
       });
-      response = response.data;
 
       setIsPosting(false);
-      if (response.status != true) {
-        toast(response.msg, { type: "error" });
+      if (data.status != true) {
+        toast(data.msg, { type: "error" });
         return;
       }
-      toast(response.msg, { type: "success" });
-      CleanUp();
+      toast(data.msg, { type: "success" });
+      router.push("/panel/products");
     } catch (err) {
       console.log(err);
       toast("خطایی رخ داد", { type: "error" });
       setIsPosting(false);
     }
-  }
-  function CleanUp() {
-    setSelectedFile(null);
-    setProductImage();
-    handleClose();
-    doRerender();
-  }
-
-  function ChooseFile() {
-    refFileInput.current.click();
-  }
-
-  function handleFileChange(e) {
-    setSelectedFile(e.target.files[0]);
-    if (e.target.files && e.target.files[0]) {
-      var reader = new FileReader();
-
-      reader.onload = function (ev) {
-        setProductImage(ev.target.result);
-      };
-
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  }
-  function handleImageDeselect() {
-    setSelectedFile(null);
-    if (product?.Image) setProductImage(product.Image.File.name);
   }
 
   return (
@@ -118,136 +95,149 @@ const Page = ({ product, cats }) => {
                 <div className="col-12">
                   <Formik
                     initialValues={{
-                      name: "",
-                      barcode: "",
-                      basePrice: 0,
-                      category: "",
-                      isVisible: false,
-                      //specialPrice: product ? product.specialPrice : undefined,
+                      name: product.name || "",
+                      regular_price: product.regular_price || "",
+                      sale_price: product.sale_price || "",
+                      manage_stock: product.manage_stock || false,
+                      stock_quantity: product.stock_quantity || null,
+                      stock_status: product.stock_status || null,
                     }}
                     onSubmit={(e) => formSubmit(e)}
                   >
-                    <Form>
-                      <div
-                        className="row justify-content-center"
-                        style={{ textAlign: "right" }}
-                      >
-                        <div className="col-12">
-                          <div className="row justify-content-center">
-                            {productImage ? (
-                              <Image
-                                src={productImage}
-                                alt="product image"
-                                width={100}
-                                height={100}
-                              ></Image>
-                            ) : (
-                              <div className="alert alert-warning">
-                                محصول تصویری ندارد!
-                              </div>
-                            )}
+                    {({ values }) => (
+                      <Form>
+                        <div
+                          className="row justify-content-center"
+                          style={{ textAlign: "right" }}
+                        >
+                          <div className="col-12">
+                            <ImageSelector
+                              orgImage={product?.images[0]?.src}
+                              image={productImage}
+                              setImage={setProductImage}
+                            ></ImageSelector>
                           </div>
-                          <div className="row justify-content-center mt-2">
-                            <button
-                              className="btn btn-info"
-                              type="button"
-                              onClick={ChooseFile}
+                          <div className="col-12">
+                            <div className="form-group">
+                              <label>نام محصول:</label>
+                              <Field className="form-control" name="name" />
+                            </div>
+                            <div className="form-group">
+                              <label>قیمت:</label>
+                              <Field
+                                className="form-control"
+                                name="regular_price"
+                                type="text"
+                                inputmode="numeric"
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label>قیمت تخفیف:</label>
+                              <Field
+                                className="form-control"
+                                name="sale_price"
+                                type="text"
+                                inputmode="numeric"
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label>دسته:</label>
+
+                              <ProductCategorySelect
+                                cats={cats}
+                                selectedCats={selectedCats}
+                                checkedList={selectedCats.current}
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label>مدیریت انبار</label>
+                              <Field
+                                type="checkbox"
+                                name="manage_stock"
+                                style={{ minWidth: "30px" }}
+                              />
+                            </div>
+                            <div
+                              className={`form-group ${
+                                !values.manage_stock && "d-none"
+                              }`}
                             >
-                              <FontAwesomeIcon
-                                icon={faUpload}
-                                style={{ height: "20px" }}
-                              ></FontAwesomeIcon>
-                            </button>
-                            {selectedFile ? (
-                              <button
-                                type="button"
-                                className="btn btn-danger mr-1"
-                                onClick={(e) => handleImageDeselect(e)}
+                              <label>تعداد موجودی:</label>
+                              <Field
+                                type="number"
+                                name="stock_quantity"
+                                style={{ minWidth: "30px" }}
+                              />
+                            </div>
+                            <div
+                              className={`form-group ${
+                                values.manage_stock && "d-none"
+                              }`}
+                            >
+                              <label>وضعیت موجودی انبار</label>
+                              <Field
+                                className="form-control"
+                                name="stock_status"
+                                as="select"
                               >
-                                <FontAwesomeIcon
-                                  icon={faXmark}
-                                  style={{ height: "20px" }}
-                                ></FontAwesomeIcon>
-                              </button>
-                            ) : (
-                              ""
-                            )}
+                                <option value="instock">موجود در انبار</option>
+                                <option value="outofstock">ناموجود</option>
+                                <option value="onbackorder">
+                                  قابل پیش خرید
+                                </option>
+                              </Field>
+                            </div>
+
+                            <div className="row justify-content-center mt-1">
+                              {isPosting ? (
+                                <>
+                                  <div className="spinner-border text-primary">
+                                    <span className="sr-only">
+                                      در حال انجام ...
+                                    </span>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    className="btn btn-primary"
+                                    type="submit"
+                                    disabled={isPosting ? true : false}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faSave}
+                                      style={{ height: "20px" }}
+                                    ></FontAwesomeIcon>
+                                    <span className="pr-1">ذخیره</span>
+                                  </button>
+                                  <button
+                                    className="btn btn-danger mr-1"
+                                    type="button"
+                                    disabled={isPosting ? true : false}
+                                    onClick={submitRemove}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faTrash}
+                                      style={{ height: "20px" }}
+                                    ></FontAwesomeIcon>
+                                    <span className="pr-1">حذف محصول</span>
+                                  </button>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        <div className="col-12">
-                          <div className="form-group">
-                            <label>عنوان محصول:</label>
-                            <Field className="form-control" name="name" />
-                          </div>
-                          <div className="form-group">
-                            <label>شماره بارکد:</label>
-                            <Field className="form-control" name="barcode" />
-                          </div>
-                          <div className="form-group">
-                            <label>دسته:</label>
-                            <ProductCategorySelect cats={cats} />
-                          </div>
-                          <div className="form-group">
-                            <label>قیمت:</label>
-                            <Field
-                              className="form-control"
-                              name="basePrice"
-                              type="number"
-                            />
-                          </div>
-
-                          <div className="form-group mb-0">
-                            <label>نمایش داده شود؟</label>
-                            <Field type="checkbox" name="isVisible" />
-                          </div>
-
-                          <div className="row justify-content-center mt-1">
-                            {isPosting ? (
-                              <>
-                                <div className="spinner-border text-primary">
-                                  <span className="sr-only">
-                                    در حال انجام ...
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <button
-                                  className="btn btn-primary"
-                                  type="submit"
-                                  disabled={isPosting ? true : false}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faSave}
-                                    style={{ height: "20px" }}
-                                  ></FontAwesomeIcon>
-                                  <span className="pr-1">ذخیره</span>
-                                </button>
-                                <button
-                                  className="btn btn-danger mr-1"
-                                  type="button"
-                                  disabled={isPosting ? true : false}
-                                  onClick={submitRemove}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faTrash}
-                                    style={{ height: "20px" }}
-                                  ></FontAwesomeIcon>
-                                  <span className="pr-1">حذف محصول</span>
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </Form>
+                      </Form>
+                    )}
                   </Formik>
+                  {/* 
                   <input
                     type="file"
                     className="d-none"
                     ref={refFileInput}
                     onChange={(e) => handleFileChange(e)}
                   />
+                  */}
                 </div>
               </div>
             </div>
