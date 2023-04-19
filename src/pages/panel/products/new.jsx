@@ -9,17 +9,15 @@ import { Formik, Form, Field } from "formik";
 import axios from "axios";
 import ProductCategorySelect from "../../../components/panel/products/ProductCategorySelect";
 import ImageSelector from "../../../components/ImageSelector";
-import Swal from "sweetalert2";
 import dynamic from "next/dynamic";
 
-const Page = ({ product, cats }) => {
+const Page = ({ cats }) => {
   const [productImage, setProductImage] = useState();
   const [isPosting, setIsPosting] = useState(false);
-  //const [description, setDescription] = useState("");
-  const description = useRef(product.description);
-  const shortDesc = useRef(product.short_description);
-  const selectedCats = useRef(product?.categories?.map((x) => x.id));
+  const shortDesc = useRef("");
+  const selectedCats = useRef([]);
   const router = useRouter();
+
   const ProductQuill = dynamic(
     () => import("../../../components/panel/products/ProductQuill"),
     { ssr: false }
@@ -29,52 +27,11 @@ const Page = ({ product, cats }) => {
     try {
       setIsPosting(true);
 
-      const { data } = await axios.post("/api/panel/products/update", {
-        productID: product.id,
+      const { data } = await axios.post("/api/panel/products/new", {
         img: productImage,
         ...values,
         cats: selectedCats.current,
-        //description: description.current,
-        short_description: shortDesc.current,
       });
-      setIsPosting(false);
-      if (data.status != true) {
-        toast(data.msg, { type: "error" });
-        return;
-      }
-      toast(data.msg, { type: "success" });
-      console.log("sel", selectedCats.current);
-    } catch (err) {
-      toast("خطایی رخ داد", { type: "error" });
-      setIsPosting(false);
-      console.log(err);
-    }
-  }
-
-  async function submitRemove() {
-    try {
-      let force = false;
-      const dialogResult = await Swal.fire({
-        title: "توجه",
-        text: "نوع حذف را انتخاب کنید",
-        customClass: "font-fa",
-        //icon: "warning",
-        showDenyButton: true,
-        confirmButtonText: "انتقال به زباله دان",
-        denyButtonText: "حذف کامل",
-        color: "red",
-      });
-
-      if (!dialogResult.isConfirmed) {
-        force = true;
-      }
-      setIsPosting(true);
-
-      const { data } = await axios.post("/api/panel/products/remove", {
-        productID: product.id,
-        force,
-      });
-
       setIsPosting(false);
       if (data.status != true) {
         toast(data.msg, { type: "error" });
@@ -82,10 +39,11 @@ const Page = ({ product, cats }) => {
       }
       toast(data.msg, { type: "success" });
       router.push("/panel/products");
+      console.log("sel", selectedCats.current);
     } catch (err) {
-      console.log(err);
       toast("خطایی رخ داد", { type: "error" });
       setIsPosting(false);
+      console.log(err);
     }
   }
 
@@ -95,35 +53,17 @@ const Page = ({ product, cats }) => {
         <div className="col-12">
           <div className="card">
             <div className="card-body">
-              <a
-                className="btn btn-info ml-1"
-                href={product.permalink}
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: "white" }}
-              >
-                مشاهده در فروشگاه
-              </a>
-              <a
-                className="btn btn-primary"
-                href={`${process.env.NEXT_PUBLIC_WOO_SITE}/wp-admin/post.php?post=${product.id}&action=edit`}
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: "white" }}
-              >
-                مشاهده در مدیریت
-              </a>
               <div className="row">
                 <div className="col-12">
                   <Formik
                     initialValues={{
-                      name: product.name || "",
-                      regular_price: product.regular_price || "",
-                      sale_price: product.sale_price || "",
-                      manage_stock: product.manage_stock || false,
-                      stock_quantity: product.stock_quantity || null,
-                      stock_status: product.stock_status || null,
-                      weight: product.weight || null,
+                      name: "",
+                      regular_price: "",
+                      sale_price: "",
+                      manage_stock: false,
+                      stock_quantity: 1,
+                      stock_status: "instock",
+                      weight: "",
                     }}
                     onSubmit={(e) => formSubmit(e)}
                   >
@@ -135,7 +75,7 @@ const Page = ({ product, cats }) => {
                         >
                           <div className="col-12">
                             <ImageSelector
-                              orgImage={product?.images[0]?.src}
+                              //orgImage={product?.images[0]?.src}
                               image={productImage}
                               setImage={setProductImage}
                             ></ImageSelector>
@@ -151,7 +91,7 @@ const Page = ({ product, cats }) => {
                                 className="form-control"
                                 name="regular_price"
                                 type="text"
-                                inputMode="numeric"
+                                inputmode="numeric"
                               />
                             </div>
                             <div className="form-group">
@@ -160,7 +100,7 @@ const Page = ({ product, cats }) => {
                                 className="form-control"
                                 name="sale_price"
                                 type="text"
-                                inputMode="numeric"
+                                inputmode="numeric"
                               />
                             </div>
                             <div className="form-group">
@@ -221,15 +161,10 @@ const Page = ({ product, cats }) => {
                               />
                             </div>
 
-                            {/*
-                            <label>توضیحات کامل</label>
-                            <ProductQuill refValue={description} />
-                            <hr />
- */}
                             <label>توضیحات کوتاه</label>
                             <ProductQuill refValue={shortDesc} />
 
-                            <div className="row justify-content-center mt-4">
+                            <div className="row justify-content-center mt-1">
                               {isPosting ? (
                                 <>
                                   <div className="spinner-border text-primary">
@@ -250,18 +185,6 @@ const Page = ({ product, cats }) => {
                                       style={{ height: "20px" }}
                                     ></FontAwesomeIcon>
                                     <span className="pr-1">ذخیره</span>
-                                  </button>
-                                  <button
-                                    className="btn btn-danger mr-1"
-                                    type="button"
-                                    disabled={isPosting ? true : false}
-                                    onClick={submitRemove}
-                                  >
-                                    <FontAwesomeIcon
-                                      icon={faTrash}
-                                      style={{ height: "20px" }}
-                                    ></FontAwesomeIcon>
-                                    <span className="pr-1">حذف محصول</span>
                                   </button>
                                 </>
                               )}
@@ -291,14 +214,10 @@ const Page = ({ product, cats }) => {
 
 export async function getServerSideProps(context) {
   try {
-    const { productID } = context.query;
-    const productsReq = woo.get(`products/${productID}`);
-    const catsReq = woo.get(`products/categories`);
-
-    const [productsRes, catsRes] = await Promise.all([productsReq, catsReq]);
+    const catsRes = await woo.get(`products/categories`);
 
     return {
-      props: { status: true, product: productsRes.data, cats: catsRes.data },
+      props: { status: true, cats: catsRes.data },
     };
   } catch (err) {
     console.log(err);

@@ -8,18 +8,6 @@ import fs from "fs";
 import mime from "mime-types";
 
 const postSchema = z.object({
-  productID: z.number(),
-  /*
-  status: z.enum([
-    "pending",
-    "processing",
-    "on-hold",
-    "completed",
-    "cancelled",
-    "refunded",
-    "failed",
-  ]),
-  */
   img: z.string().nullish(),
   cats: z.array(z.number()),
   name: z.string(),
@@ -40,7 +28,6 @@ export default async function handler(req, res) {
       return res.send({ status: false, msg: "اطلاعات ارسالی نا صحیح" });
     }
     const {
-      productID,
       img,
       cats,
       name,
@@ -82,15 +69,11 @@ export default async function handler(req, res) {
       await fs.promises.unlink(`./uploads/${fileName}`);
     }
 
-    const response = await woo.put(`products/${productID}`, {
+    const response = await woo.post(`products`, {
       name,
       regular_price,
       sale_price,
       categories: cats.map((x) => ({ id: x })),
-      // media_attachment: base64TOBuffer(img),
-      //media_attachment: img,
-      // media_path: "/api",
-
       images: img
         ? [
             {
@@ -107,16 +90,12 @@ export default async function handler(req, res) {
       short_description,
     });
 
-    if (response.status != 200) {
-      console.log(response.data);
-      return res.send({ status: false, msg: "خطای در سرور" });
-    }
     res.send({
       status: true,
-      msg: "ویرایش موفق",
+      msg: "محصول ایجاد شد",
     });
   } catch (err) {
-    console.log(err);
+    console.log("err", err);
     res.status(500).send(err);
   }
 }

@@ -2710,3 +2710,46 @@ main {
 .en-font {
   font-family: Arial !important;
 }
+
+.bootstrap-demo .dropdown-trigger {
+          border-radius: 0.25rem;
+        }
+
+        .bootstrap-demo .dropdown-trigger > span:after {
+          font-size: 12px;
+          color: #555;
+        }
+
+        .bootstrap-demo .toggle {
+          font: normal normal normal 12px/1 FontAwesome;
+          color: #555;
+        }
+
+        .bootstrap-demo .toggle.collapsed::after {
+          content: "\f067";
+        }
+
+        .bootstrap-demo .toggle.expanded::after {
+          content: "\f068";
+        }
+
+        .bootstrap-demo .root {
+          padding: 0px;
+          margin: 0px;
+        }
+
+        input.checkbox-item {
+          min-width: 30px !important;
+        }
+
+        input.search {
+          border-radius: 0px !important;
+          padding: 0px !important;
+        }
+        .node[aria-level="2"] {
+          background-color: #dae2f3b5;
+        }
+        .node[aria-level="2"]::before {
+          content: "-";
+          margin-right: 14px;
+        }
