@@ -46,3 +46,4 @@ yarn-error.log*
 /scripts/products/**
 
 uploads
+.vscode

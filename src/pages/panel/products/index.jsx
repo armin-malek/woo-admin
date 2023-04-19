@@ -7,6 +7,9 @@ import Paginator from "../../../components/Paginator";
 import axios from "axios";
 import ProductTableItem from "../../../components/panel/products/ProductTableItem";
 import OrderEditModal from "../../../components/panel/orders/OrderEditModal";
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,9 +58,22 @@ const Page = () => {
         <div className="col-12">
           <div className="d-flex justify-content-end">
             <div className="col pr-0 pt-0">
+              <Link href="/panel/products/new" style={{ marginLeft: "5px" }}>
+                <span className="btn btn-info">
+                  <FontAwesomeIcon
+                    icon={faPlus}
+                    style={{
+                      height: "17px",
+                      marginLeft: "5px",
+                      marginTop: "5px",
+                    }}
+                  />
+                  ایجاد
+                </span>
+              </Link>
               <input
                 type="text"
-                className="form-control form-control-lg search d-inline"
+                className="form-control form-control-lg  d-inline"
                 placeholder="جستجو ..."
                 autoComplete="off"
                 onChange={(e) => setSearchTerm(e.target.value)}

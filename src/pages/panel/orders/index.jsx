@@ -1,10 +1,7 @@
 import TableRowSkeleton from "../../../components/TableRowSkeleton";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { parseDate, parseDateFull } from "../../../server/common/time";
-import AdminOrderTableItem from "../../../components/cp/admin/orders/AdminOrderTableItem";
-import AdminOrderViewModal from "../../../components/cp/admin/orders/AdminOrderViewModal";
-import AdminOrderEditModal from "../../../components/cp/admin/orders/AdminOrderEditModal";
+
 import LayoutAdmin from "../../../components/LayoutAdmin";
 import Paginator from "../../../components/Paginator";
 import axios from "axios";
@@ -82,7 +79,7 @@ const Page = () => {
             <div className="col pr-0 pt-0">
               <input
                 type="text"
-                className="form-control form-control-lg search d-inline"
+                className="form-control form-control-lg  d-inline"
                 placeholder="جستجو ..."
                 autoComplete="off"
                 onChange={(e) => setSearchTerm(e.target.value)}

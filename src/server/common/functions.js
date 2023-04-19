@@ -111,3 +111,10 @@ export function base64TOBuffer(base64) {
 export function percentageOff(baseNum, percentageNum) {
   return baseNum * (1 - percentageNum / 100);
 }
+
+export function stringCut(string, limit) {
+  if (string.length > limit - 3) {
+    return string.substring(0, limit) + " ...";
+  }
+  return string;
+}

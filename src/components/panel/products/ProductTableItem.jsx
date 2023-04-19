@@ -1,6 +1,6 @@
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { priceLocale } from "../../../server/common/functions";
+import { priceLocale, stringCut } from "../../../server/common/functions";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -19,10 +19,10 @@ export default function ProductTableItem({ product }) {
             ></FontAwesomeIcon>
           </Link>
         </td>
-        <td>
+        <td style={{ verticalAlign: "middle" }}>
           <Image src={product.image} alt="" width={50} height={50} />
         </td>
-        <td className="align-middle">{product.name}</td>
+        <td className="align-middle">{stringCut(product.name, 25)}</td>
         <td className="align-middle">{stockStatus(product)}</td>
         <td className="align-middle">{priceLocale(product.price)}</td>
 
