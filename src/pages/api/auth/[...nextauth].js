@@ -53,7 +53,11 @@ export const authOptions = {
 
           // return user;
           if (!user) return null;
-          return user;
+          // return user;
+
+          if (credentials?.password == user.password) return user;
+          else return null;
+          /*
           bcrypt.compare(
             credentials?.password,
             user.password,
@@ -68,6 +72,7 @@ export const authOptions = {
               return user;
             }
           );
+          */
         } catch (err) {
           console.log(err);
           return null;

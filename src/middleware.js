@@ -1,8 +1,8 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
-const protectedAPIRoutes = ["/api/cp", "/api/shop"];
-const protectedRoutes = ["/shop", "/bulk", "/cp"];
+const protectedAPIRoutes = ["/api/panel"];
+const protectedRoutes = ["/panel"];
 export async function middleware(req) {
   // return early if url isn't supposed to be protected
   const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

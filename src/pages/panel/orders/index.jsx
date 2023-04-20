@@ -108,45 +108,36 @@ const Page = () => {
               </select>
             </div>
           </div>
-          {orders?.length > 0 ? (
-            <div className="card">
-              <div
-                className="table-responsive"
-                style={{ whiteSpace: "nowrap" }}
-              >
-                <table className="table text-center">
-                  <thead className="thead-light">
-                    <tr className="">
-                      <th className="align-middle">مشاهده</th>
-                      <th className="align-middle">سفارش</th>
-                      <th className="align-middle">تاریخ</th>
-                      <th className="align-middle">وضعیت</th>
-                      <th className="align-middle">مبلغ</th>
-                    </tr>
-                  </thead>
-                  <tbody className="table">
-                    {isLoading ? (
-                      <TableRowSkeleton rows={10} cells={5} />
-                    ) : (
-                      orders?.map((order, index) => (
-                        <OrderTableItem
-                          key={index}
-                          order={order}
-                          handleShowEdit={handleShowEdit}
-                        ></OrderTableItem>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+
+          <div className="card">
+            <div className="table-responsive" style={{ whiteSpace: "nowrap" }}>
+              <table className="table text-center">
+                <thead className="thead-light">
+                  <tr className="">
+                    <th className="align-middle">مشاهده</th>
+                    <th className="align-middle">سفارش</th>
+                    <th className="align-middle">تاریخ</th>
+                    <th className="align-middle">وضعیت</th>
+                    <th className="align-middle">مبلغ</th>
+                  </tr>
+                </thead>
+                <tbody className="table">
+                  {isLoading ? (
+                    <TableRowSkeleton rows={10} cells={5} />
+                  ) : (
+                    orders?.map((order, index) => (
+                      <OrderTableItem
+                        key={index}
+                        order={order}
+                        handleShowEdit={handleShowEdit}
+                      ></OrderTableItem>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          ) : (
-            <div className="row justify-content-center mt-5">
-              <span className="alert alert-info">
-                موردی برای نمایش وجود ندارد
-              </span>
-            </div>
-          )}
+          </div>
+
           {pageCount > 1 && (
             <div className="row justify-content-center">
               <Paginator pageCount={pageCount} setPageNum={setPageNum} />
