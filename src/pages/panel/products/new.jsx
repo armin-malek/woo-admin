@@ -1,27 +1,30 @@
 import { useRouter } from "next/router";
 import LayoutAdmin from "../../../components/LayoutAdmin";
 import woo from "../../../server/common/woocommerce";
-import { faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { Formik, Form, Field } from "formik";
 import axios from "axios";
 import ProductCategorySelect from "../../../components/panel/products/ProductCategorySelect";
 import ImageSelector from "../../../components/ImageSelector";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 
 const Page = ({ cats }) => {
   const [productImage, setProductImage] = useState();
   const [isPosting, setIsPosting] = useState(false);
-  const shortDesc = useRef("");
+  // const [barCode, setBarCode] = useState();
+  // const shortDesc = useRef("");
   const selectedCats = useRef([]);
   const router = useRouter();
 
+  /*
   const ProductQuill = dynamic(
     () => import("../../../components/panel/products/ProductQuill"),
     { ssr: false }
   );
+  */
 
   async function formSubmit(values) {
     try {
@@ -49,8 +52,8 @@ const Page = ({ cats }) => {
 
   return (
     <>
-      <div className="row mt-3">
-        <div className="col-12">
+      <div className="row mt-3 justify-content-center">
+        <div className="col-12 col-sm-11 col-md-10 col-lg-6">
           <div className="card">
             <div className="card-body">
               <div className="row">
@@ -64,6 +67,8 @@ const Page = ({ cats }) => {
                       stock_quantity: 1,
                       stock_status: "instock",
                       weight: "",
+                      // barCode: atob(router.query.barCode),
+                      barCode: "",
                     }}
                     onSubmit={(e) => formSubmit(e)}
                   >
@@ -81,6 +86,15 @@ const Page = ({ cats }) => {
                             ></ImageSelector>
                           </div>
                           <div className="col-12">
+                            <div className="form-group">
+                              <label>بارکد (13 رقم) :</label>
+                              <Field
+                                className="form-control"
+                                name="barCode"
+                                required="true"
+                                minLength="13"
+                              />
+                            </div>
                             <div className="form-group">
                               <label>نام محصول:</label>
                               <Field className="form-control" name="name" />
@@ -152,7 +166,7 @@ const Page = ({ cats }) => {
                             </div>
 
                             <div className="form-group">
-                              <label>وزن:</label>
+                              <label>وزن (کیلوگرم) :</label>
                               <Field
                                 className="form-control"
                                 name="weight"
@@ -161,9 +175,11 @@ const Page = ({ cats }) => {
                               />
                             </div>
 
+                            {/*
                             <label>توضیحات کوتاه</label>
                             <ProductQuill refValue={shortDesc} />
 
+                             */}
                             <div className="row justify-content-center mt-1">
                               {isPosting ? (
                                 <>
@@ -176,7 +192,7 @@ const Page = ({ cats }) => {
                               ) : (
                                 <>
                                   <button
-                                    className="btn btn-primary"
+                                    className="btn btn-primary mt-3"
                                     type="submit"
                                     disabled={isPosting ? true : false}
                                   >
@@ -184,7 +200,7 @@ const Page = ({ cats }) => {
                                       icon={faSave}
                                       style={{ height: "20px" }}
                                     ></FontAwesomeIcon>
-                                    <span className="pr-1">ذخیره</span>
+                                    <span className="pr-1">ایجاد محصول</span>
                                   </button>
                                 </>
                               )}
@@ -214,7 +230,7 @@ const Page = ({ cats }) => {
 
 export async function getServerSideProps(context) {
   try {
-    const catsRes = await woo.get(`products/categories`);
+    const catsRes = await woo.get(`products/categories`, { hide_empty: true });
 
     return {
       props: { status: true, cats: catsRes.data },

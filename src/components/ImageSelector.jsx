@@ -41,13 +41,20 @@ export default function ImageSelector({ orgImage, image, setImage }) {
   return (
     <>
       <div className="row justify-content-center">
-        {displayImage ? (
+        {/*
           <Image
+          src={displayImage || orgImage}
+          alt="product image"
+          width={100}
+          height={100}
+          ></Image>
+        */}
+        {displayImage ? (
+          <img
             src={displayImage || orgImage}
             alt="product image"
-            width={100}
-            height={100}
-          ></Image>
+            style={{ width: "100px", height: "100px" }}
+          />
         ) : (
           <div className="alert alert-warning">بدون تصویر!</div>
         )}

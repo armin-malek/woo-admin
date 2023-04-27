@@ -12,7 +12,7 @@ export default function SignIn({ csrfToken }) {
         <div className="row no-gutters vh-100 proh bg-template">
           <div className="col align-self-center px-3 text-center">
             <Image
-              src="/img/logo-white.png"
+              src="/img/logo.png"
               alt="لوگو بفرستو"
               width={130}
               height={80}

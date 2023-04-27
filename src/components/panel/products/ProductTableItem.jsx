@@ -20,7 +20,14 @@ export default function ProductTableItem({ product }) {
           </Link>
         </td>
         <td style={{ verticalAlign: "middle" }}>
+          {/*
           <Image src={product.image} alt="" width={50} height={50} />
+           */}
+          <img
+            src={product.image}
+            alt="product image"
+            style={{ width: "50px", height: "50px" }}
+          />
         </td>
         <td className="align-middle">{stringCut(product.name, 25)}</td>
         <td className="align-middle">{stockStatus(product)}</td>

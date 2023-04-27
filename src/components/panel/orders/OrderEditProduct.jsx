@@ -9,7 +9,14 @@ export default function AdminOrderEditProduct({ item }) {
   return (
     <tr className="border-bottom">
       <td>
+        {/*
         <Image src={item?.image?.src} alt="" width={50} height={50} />
+         */}
+        <img
+          src={item?.image?.src}
+          alt="product image"
+          style={{ width: "50px", height: "50px" }}
+        />
       </td>
       <td>
         <a

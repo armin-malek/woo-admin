@@ -120,3 +120,11 @@ export default async function handler(req, res) {
     res.status(500).send(err);
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "10mb", // Set desired value here
+    },
+  },
+};

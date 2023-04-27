@@ -33,7 +33,7 @@ export default function SigninForm() {
         <p className="label">نام کاربری و کلمه عبور خود را وارد کنید</p>
         {/* float-label */}
         <div className="form-group">
-          <label style={{ marginBottom: "0px" }}>ایمیل</label>
+          <label style={{ marginBottom: "0px" }}>نام کاربری</label>
           <input
             type="text"
             className="form-control"

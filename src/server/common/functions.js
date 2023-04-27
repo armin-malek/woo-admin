@@ -1,5 +1,5 @@
 import Hashids from "hashids";
-const hashids = new Hashids(process.env.HASHID_SALT, 16);
+const hashids = new Hashids(process.env.NEXT_PUBLIC_HASHID_SALT, 16);
 const SITE_URL = process.env.NEXTAUTH_URL;
 
 export function CalcOrderPoints(totalCost, itemCount, paymentPoints) {

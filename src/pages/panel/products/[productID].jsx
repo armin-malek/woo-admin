@@ -10,20 +10,23 @@ import axios from "axios";
 import ProductCategorySelect from "../../../components/panel/products/ProductCategorySelect";
 import ImageSelector from "../../../components/ImageSelector";
 import Swal from "sweetalert2";
-import dynamic from "next/dynamic";
+import { prisma } from "../../../server/db/client";
+// import dynamic from "next/dynamic";
 
-const Page = ({ product, cats }) => {
+const Page = ({ status, msg, product, cats, barCode }) => {
   const [productImage, setProductImage] = useState();
   const [isPosting, setIsPosting] = useState(false);
   //const [description, setDescription] = useState("");
-  const description = useRef(product.description);
-  const shortDesc = useRef(product.short_description);
+  // const description = useRef(product.description);
+  // const shortDesc = useRef(product?.short_description);
   const selectedCats = useRef(product?.categories?.map((x) => x.id));
   const router = useRouter();
+  /*
   const ProductQuill = dynamic(
     () => import("../../../components/panel/products/ProductQuill"),
     { ssr: false }
   );
+  */
 
   async function formSubmit(values) {
     try {
@@ -35,7 +38,7 @@ const Page = ({ product, cats }) => {
         ...values,
         cats: selectedCats.current,
         //description: description.current,
-        short_description: shortDesc.current,
+        // short_description: shortDesc.current,
       });
       setIsPosting(false);
       if (data.status != true) {
@@ -89,15 +92,25 @@ const Page = ({ product, cats }) => {
     }
   }
 
+  if (status == false) {
+    return (
+      <>
+        <div className="row justify-content-center">
+          <span className="alert alert-danger">{msg}</span>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      <div className="row mt-3">
-        <div className="col-12">
+      <div className="row mt-3 justify-content-center">
+        <div className="col-12 col-sm-11 col-md-10 col-lg-6">
           <div className="card">
             <div className="card-body">
               <a
                 className="btn btn-info ml-1"
-                href={product.permalink}
+                href={product?.permalink}
                 target="_blank"
                 rel="noreferrer"
                 style={{ color: "white" }}
@@ -113,7 +126,7 @@ const Page = ({ product, cats }) => {
               >
                 مشاهده در مدیریت
               </a>
-              <div className="row">
+              <div className="row mt-2">
                 <div className="col-12">
                   <Formik
                     initialValues={{
@@ -124,6 +137,7 @@ const Page = ({ product, cats }) => {
                       stock_quantity: product.stock_quantity || null,
                       stock_status: product.stock_status || null,
                       weight: product.weight || null,
+                      barCode: barCode?.barcode || "",
                     }}
                     onSubmit={(e) => formSubmit(e)}
                   >
@@ -141,6 +155,15 @@ const Page = ({ product, cats }) => {
                             ></ImageSelector>
                           </div>
                           <div className="col-12">
+                            <div className="form-group">
+                              <label>بارکد (13 رقم) :</label>
+                              <Field
+                                className="form-control"
+                                name="barCode"
+                                required="true"
+                                minLength="13"
+                              />
+                            </div>
                             <div className="form-group">
                               <label>نام محصول:</label>
                               <Field className="form-control" name="name" />
@@ -212,7 +235,7 @@ const Page = ({ product, cats }) => {
                             </div>
 
                             <div className="form-group">
-                              <label>وزن:</label>
+                              <label>وزن (کیلوگرم) :</label>
                               <Field
                                 className="form-control"
                                 name="weight"
@@ -225,9 +248,9 @@ const Page = ({ product, cats }) => {
                             <label>توضیحات کامل</label>
                             <ProductQuill refValue={description} />
                             <hr />
- */}
                             <label>توضیحات کوتاه</label>
                             <ProductQuill refValue={shortDesc} />
+                          */}
 
                             <div className="row justify-content-center mt-4">
                               {isPosting ? (
@@ -293,12 +316,26 @@ export async function getServerSideProps(context) {
   try {
     const { productID } = context.query;
     const productsReq = woo.get(`products/${productID}`);
-    const catsReq = woo.get(`products/categories`);
+    const catsReq = woo.get(`products/categories`, { hide_empty: true });
+    const barCodeGet = prisma.product.findUnique({
+      where: { id: parseInt(productID) },
+    });
 
-    const [productsRes, catsRes] = await Promise.all([productsReq, catsReq]);
+    const [productsRes, catsRes, barCode] = await Promise.all([
+      productsReq,
+      catsReq,
+      barCodeGet,
+    ]);
+
+    console.log(productsRes, catsRes, barCode);
 
     return {
-      props: { status: true, product: productsRes.data, cats: catsRes.data },
+      props: {
+        status: true,
+        product: productsRes.data,
+        cats: catsRes.data,
+        barCode,
+      },
     };
   } catch (err) {
     console.log(err);

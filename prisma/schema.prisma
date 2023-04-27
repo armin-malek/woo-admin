@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  //url      = env("DATABASE_URL")
   url      = "postgresql://root:SW46N2ftGXfHBfOTfMV8SqmP@alfie.iran.liara.ir:31444/niniyeto"
 }
 
@@ -57,4 +58,12 @@ model VerificationRequest {
   updatedAt  DateTime @updatedAt
 
   @@unique([identifier, token])
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  barcode     String   @unique
+  wp_id       Int
+  wp_url      String   @db.Text
+  dateCreated DateTime
 }

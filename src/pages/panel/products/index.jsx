@@ -10,6 +10,9 @@ import OrderEditModal from "../../../components/panel/orders/OrderEditModal";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import Html5QrcodeScannerPlugin from "../../../components/Html5QrcodeScannerPlugin";
+import { encodeInt } from "../../../server/common/functions";
+import { useRouter } from "next/router";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +20,7 @@ const Page = () => {
   const [pageCount, setPageCount] = useState();
   const [pageNum, setPageNum] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     LoadProducts();
@@ -52,6 +56,10 @@ const Page = () => {
     }
   }
 
+  async function handleBarcode(result) {
+    router.push("/panel/products/new/" + btoa(result));
+  }
+
   return (
     <>
       <div className="row mt-3">
@@ -71,6 +79,13 @@ const Page = () => {
                   ایجاد
                 </span>
               </Link>
+              {/*
+              <Html5QrcodeScannerPlugin
+                fps={10}
+                SubmitBarcode={handleBarcode}
+              />
+               */}
+              <div className="d-flex mt-2 justify-content-center"></div>
               <input
                 type="text"
                 className="form-control form-control-lg  d-inline"

@@ -46,17 +46,28 @@ export const authOptions = {
       },
       async authorize(credentials) {
         try {
-          console.log("cred");
+          console.log("cred", credentials);
           const user = await prisma.user.findUnique({
             where: { email: credentials?.email },
           });
 
           // return user;
-          if (!user) return null;
+          if (!user) {
+            console.log("no user");
+            return null;
+          }
+
           // return user;
 
-          if (credentials?.password == user.password) return user;
-          else return null;
+          if (credentials?.password == user.password) {
+            console.log("ok pass");
+
+            return user;
+          } else {
+            console.log("wrong pass");
+
+            return null;
+          }
           /*
           bcrypt.compare(
             credentials?.password,
