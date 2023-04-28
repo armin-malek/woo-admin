@@ -46,7 +46,7 @@ const Page = ({ status, msg, product, cats, barCode }) => {
         return;
       }
       toast(data.msg, { type: "success" });
-      console.log("sel", selectedCats.current);
+      // console.log("sel", selectedCats.current);
     } catch (err) {
       toast("خطایی رخ داد", { type: "error" });
       setIsPosting(false);
@@ -156,17 +156,20 @@ const Page = ({ status, msg, product, cats, barCode }) => {
                           </div>
                           <div className="col-12">
                             <div className="form-group">
-                              <label>بارکد (13 رقم) :</label>
+                              <label>بارکد :</label>
                               <Field
                                 className="form-control"
                                 name="barCode"
                                 required="true"
-                                minLength="13"
                               />
                             </div>
                             <div className="form-group">
                               <label>نام محصول:</label>
-                              <Field className="form-control" name="name" />
+                              <Field
+                                className="form-control"
+                                name="name"
+                                required
+                              />
                             </div>
                             <div className="form-group">
                               <label>قیمت:</label>
@@ -175,6 +178,7 @@ const Page = ({ status, msg, product, cats, barCode }) => {
                                 name="regular_price"
                                 type="text"
                                 inputMode="numeric"
+                                required
                               />
                             </div>
                             <div className="form-group">
@@ -316,7 +320,7 @@ export async function getServerSideProps(context) {
   try {
     const { productID } = context.query;
     const productsReq = woo.get(`products/${productID}`);
-    const catsReq = woo.get(`products/categories`, { hide_empty: true });
+    const catsReq = woo.get("products/categories", { per_page: 100 });
     const barCodeGet = prisma.product.findUnique({
       where: { id: parseInt(productID) },
     });
@@ -327,7 +331,7 @@ export async function getServerSideProps(context) {
       barCodeGet,
     ]);
 
-    console.log(productsRes, catsRes, barCode);
+    // console.log(productsRes, catsRes, barCode);
 
     return {
       props: {

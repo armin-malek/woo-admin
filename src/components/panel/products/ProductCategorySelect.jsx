@@ -21,33 +21,31 @@ export default function ProductCategorySelect({
 
   useEffect(() => {
     if (!cats || cats.length < 1) return;
-    let newData = [];
-    let parents = cats.filter((x) => x.parent == 0);
-    parents.map((parent) => {
-      let tmp = {
-        catid: parent.id,
-        label: parent.name,
-        children: [],
-        checked: checkedList?.includes(parent.id),
-      };
-      let children = cats.filter((x) => x.parent == parent.id);
-      children?.map((item) => {
-        tmp.children.push({
-          catid: item.id,
-          label: item.name,
-          children: [],
-          checked: checkedList?.includes(item.id),
-        });
-      });
-      newData.push(tmp);
-    });
-    setData(newData);
+    cats = createDataTree(cats);
+    console.log(cats);
+    setData(cats);
   }, [cats, checkedList]);
 
-  // useEffect(() => {
-  //   console.log("data", data);
-  // }, [data]);
-
+  const createDataTree = (dataset) => {
+    const hashTable = Object.create(null);
+    dataset.forEach(
+      (aData) =>
+        (hashTable[aData.id] = {
+          parent: aData.parent,
+          catid: aData.id,
+          label: aData.name,
+          children: [],
+          checked: checkedList?.includes(aData.id),
+        })
+    );
+    const dataTree = [];
+    dataset.forEach((aData) => {
+      if (aData.parent)
+        hashTable[aData.parent].children.push(hashTable[aData.id]);
+      else dataTree.push(hashTable[aData.id]);
+    });
+    return dataTree;
+  };
   return (
     <>
       {data && (

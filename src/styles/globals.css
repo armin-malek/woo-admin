@@ -2726,11 +2726,11 @@ main {
         }
 
         .bootstrap-demo .toggle.collapsed::after {
-          content: "\f067";
+          /*content: "\f067";*/
         }
 
         .bootstrap-demo .toggle.expanded::after {
-          content: "\f068";
+          /*content: "\f068";*/
         }
 
         .bootstrap-demo .root {

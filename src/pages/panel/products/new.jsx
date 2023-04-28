@@ -42,7 +42,7 @@ const Page = ({ cats }) => {
       }
       toast(data.msg, { type: "success" });
       router.push("/panel/products");
-      console.log("sel", selectedCats.current);
+      // console.log("sel", selectedCats.current);
     } catch (err) {
       toast("خطایی رخ داد", { type: "error" });
       setIsPosting(false);
@@ -87,17 +87,20 @@ const Page = ({ cats }) => {
                           </div>
                           <div className="col-12">
                             <div className="form-group">
-                              <label>بارکد (13 رقم) :</label>
+                              <label>بارکد :</label>
                               <Field
                                 className="form-control"
                                 name="barCode"
                                 required="true"
-                                minLength="13"
                               />
                             </div>
                             <div className="form-group">
                               <label>نام محصول:</label>
-                              <Field className="form-control" name="name" />
+                              <Field
+                                className="form-control"
+                                name="name"
+                                required
+                              />
                             </div>
                             <div className="form-group">
                               <label>قیمت:</label>
@@ -106,6 +109,7 @@ const Page = ({ cats }) => {
                                 name="regular_price"
                                 type="text"
                                 inputmode="numeric"
+                                required
                               />
                             </div>
                             <div className="form-group">
@@ -230,7 +234,7 @@ const Page = ({ cats }) => {
 
 export async function getServerSideProps(context) {
   try {
-    const catsRes = await woo.get(`products/categories`, { hide_empty: true });
+    const catsRes = await woo.get("products/categories", { per_page: 100 });
 
     return {
       props: { status: true, cats: catsRes.data },
@@ -242,5 +246,6 @@ export async function getServerSideProps(context) {
     };
   }
 }
+
 Page.PageLayout = LayoutAdmin;
 export default Page;
