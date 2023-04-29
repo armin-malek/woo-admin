@@ -24,6 +24,7 @@ export async function middleware(req) {
   }
 
   // normal routes
+
   for (let route of protectedRoutes) {
     if (url.startsWith(route) && !session) {
       return NextResponse.redirect(new URL("/auth/signin", req.url));

@@ -5,28 +5,17 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../server/db/client";
 import bcrypt from "bcrypt";
 export const authOptions = {
+  secret: process.env.NEXT_PUBLIC_SECRET,
+  debug: true,
   session: {
     strategy: "jwt",
   },
   callbacks: {
     jwt(params) {
-      //update token
-      // console.log("jwt", params);
-      //params.token.name = params.user.name;
-      //params.token.id = params.user.id;
-      // console.log("jwt done");
-
       return params.token;
     },
     async session({ session, token, user }) {
-      // Send properties to the client, like an access_token and user id from a provider.
-      //console.log("sess token", token);
-      // console.log("sess", session, token, user);
-
       session.user.id = token.id;
-
-      //delete session.image;
-      // console.log("sess done");
       return session;
     },
     async redirect({ url, baseUrl }) {
@@ -38,7 +27,7 @@ export const authOptions = {
   providers: [
     CredentialsProvider({
       type: "credentials",
-      id: "credentials",
+      id: "custom-credentials",
       name: "credentials",
       credentials: {
         email: { label: "ایمیل", type: "string" },
@@ -51,13 +40,10 @@ export const authOptions = {
             where: { email: credentials?.email },
           });
 
-          // return user;
           if (!user) {
             console.log("no user");
             return null;
           }
-
-          // return user;
 
           if (credentials?.password == user.password) {
             console.log("ok pass");
@@ -65,25 +51,8 @@ export const authOptions = {
             return user;
           } else {
             console.log("wrong pass");
-
             return null;
           }
-          /*
-          bcrypt.compare(
-            credentials?.password,
-            user.password,
-            (err, result) => {
-              console.log("result", result);
-              if (err || !result) {
-                console.log("return null");
-                return null;
-              }
-              console.log("user", user);
-
-              return user;
-            }
-          );
-          */
         } catch (err) {
           console.log(err);
           return null;
@@ -91,6 +60,7 @@ export const authOptions = {
       },
     }),
   ],
+
   pages: {
     signIn: `/auth/signin`,
   },

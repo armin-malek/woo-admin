@@ -17,7 +17,7 @@ export default function SignIn({ csrfToken }) {
               width={130}
               height={80}
             ></Image>
-            <SigninForm></SigninForm>
+            <SigninForm csrfToken={csrfToken}></SigninForm>
           </div>
         </div>
       </LayoutBase>

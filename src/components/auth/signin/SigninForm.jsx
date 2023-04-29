@@ -3,17 +3,19 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 
-export default function SigninForm() {
+export default function SigninForm({ csrfToken }) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [isPosting, setIsPosting] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
     try {
       setIsPosting(true);
-      await signIn("credentials", {
+      e.preventDefault();
+      signIn("custom-credentials", {
         email,
         password,
+        redirect: true,
         callbackUrl: `/auth/handle-auth-state/`,
       });
     } catch (err) {
@@ -32,12 +34,14 @@ export default function SigninForm() {
       >
         <p className="label">نام کاربری و کلمه عبور خود را وارد کنید</p>
         {/* float-label */}
+        <input type="hidden" name="csrf" value={csrfToken} />
         <div className="form-group">
           <label style={{ marginBottom: "0px" }}>نام کاربری</label>
           <input
             type="text"
             className="form-control"
             dir="ltr"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -49,6 +53,7 @@ export default function SigninForm() {
             type="password"
             className="form-control"
             dir="ltr"
+            name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

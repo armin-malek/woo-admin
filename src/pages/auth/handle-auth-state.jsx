@@ -1,4 +1,4 @@
-import { unstable_getServerSession } from "next-auth";
+import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 
 const Page = () => {
@@ -8,7 +8,7 @@ const Page = () => {
 export async function getServerSideProps(context) {
   try {
     console.log("server auth");
-    const session = await unstable_getServerSession(
+    const session = await getServerSession(
       context.req,
       context.res,
       authOptions
@@ -37,6 +37,13 @@ export async function getServerSideProps(context) {
     };
   } catch (err) {
     console.log(err);
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/auth/signin",
+      },
+      props: {},
+    };
   }
 }
 
