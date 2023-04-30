@@ -6,23 +6,14 @@ import { base64TOBuffer } from "../../../../server/common/functions";
 import * as ftp from "basic-ftp";
 import fs from "fs";
 import mime from "mime-types";
+import { prisma } from "../../../../server/db/client";
 
 const postSchema = z.object({
   productID: z.number(),
-  /*
-  status: z.enum([
-    "pending",
-    "processing",
-    "on-hold",
-    "completed",
-    "cancelled",
-    "refunded",
-    "failed",
-  ]),
-  */
   img: z.string().nullish(),
   cats: z.array(z.number()),
   name: z.string(),
+  barCode: z.string(),
   regular_price: z.string(),
   sale_price: z.string().nullish(),
   weight: z.string().nullish(),
@@ -44,6 +35,7 @@ export default async function handler(req, res) {
       img,
       cats,
       name,
+      barCode,
       regular_price,
       sale_price,
       manage_stock,
@@ -53,6 +45,16 @@ export default async function handler(req, res) {
       description,
       short_description,
     } = req.body;
+
+    let existing = await prisma.product.findUnique({
+      where: { barcode: barCode.trim() },
+    });
+    if (existing && existing.wp_id != productID) {
+      return res.send({
+        status: false,
+        msg: "محصول دیگری با این بارکد وجود دارد",
+      });
+    }
 
     let fileName = uuid() + ".jpg";
     // console.log("mime", mime.extension(img));
@@ -105,6 +107,11 @@ export default async function handler(req, res) {
       weight,
       description,
       short_description,
+    });
+
+    await prisma.product.update({
+      where: { wp_id: productID },
+      data: { barcode: barCode.trim() },
     });
 
     if (response.status != 200) {

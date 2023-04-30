@@ -63,7 +63,7 @@ model VerificationRequest {
 model Product {
   id          Int      @id @default(autoincrement())
   barcode     String   @unique
-  wp_id       Int
+  wp_id       Int      @unique
   wp_url      String   @db.Text
   dateCreated DateTime
 }

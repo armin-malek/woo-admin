@@ -137,7 +137,7 @@ const Page = ({ status, msg, product, cats, barCode }) => {
                       stock_quantity: product.stock_quantity || null,
                       stock_status: product.stock_status || null,
                       weight: product.weight || null,
-                      barCode: barCode?.barcode || "",
+                      barCode: barCode,
                     }}
                     onSubmit={(e) => formSubmit(e)}
                   >
@@ -322,7 +322,7 @@ export async function getServerSideProps(context) {
     const productsReq = woo.get(`products/${productID}`);
     const catsReq = woo.get("products/categories", { per_page: 100 });
     const barCodeGet = prisma.product.findUnique({
-      where: { id: parseInt(productID) },
+      where: { wp_id: parseInt(productID) },
     });
 
     const [productsRes, catsRes, barCode] = await Promise.all([
@@ -331,14 +331,14 @@ export async function getServerSideProps(context) {
       barCodeGet,
     ]);
 
-    // console.log(productsRes, catsRes, barCode);
+    // console.log(barCode);
 
     return {
       props: {
         status: true,
         product: productsRes.data,
         cats: catsRes.data,
-        barCode,
+        barCode: barCode?.barcode || "",
       },
     };
   } catch (err) {
