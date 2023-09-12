@@ -175,7 +175,7 @@ const Page = ({ cats }) => {
                                 className="form-control"
                                 name="weight"
                                 type="text"
-                                inputMode="numeric"
+                                // inputMode="numeric"
                               />
                             </div>
 

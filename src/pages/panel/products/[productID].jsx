@@ -244,7 +244,7 @@ const Page = ({ status, msg, product, cats, barCode }) => {
                                 className="form-control"
                                 name="weight"
                                 type="text"
-                                inputMode="numeric"
+                                // inputMode="numeric"
                               />
                             </div>
 

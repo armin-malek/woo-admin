@@ -5,5 +5,6 @@ const woo = new WooCommerceRestApi({
   consumerKey: process.env.WOO_KEY,
   consumerSecret: process.env.WOO_SECRET,
   version: "wc/v3",
+  queryStringAuth: true,
 });
 export default woo;

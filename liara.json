@@ -3,10 +3,6 @@
     {
       "name": "uploads",
       "mountTo": "uploads"
-    },
-    {
-      "name": "sqlite",
-      "mountTo": "sqlite"
     }
   ]
 }

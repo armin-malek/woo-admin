@@ -22,7 +22,7 @@ export default function ProductCategorySelect({
   useEffect(() => {
     if (!cats || cats.length < 1) return;
     cats = createDataTree(cats);
-    console.log(cats);
+    //console.log(cats);
     setData(cats);
   }, [cats, checkedList]);
 
@@ -38,11 +38,14 @@ export default function ProductCategorySelect({
           checked: checkedList?.includes(aData.id),
         })
     );
+    console.log("hashTable", hashTable);
+
     const dataTree = [];
     dataset.forEach((aData) => {
-      if (aData.parent)
+      if (aData.parent) {
+        console.log("last", aData.parent);
         hashTable[aData.parent].children.push(hashTable[aData.id]);
-      else dataTree.push(hashTable[aData.id]);
+      } else dataTree.push(hashTable[aData.id]);
     });
     return dataTree;
   };

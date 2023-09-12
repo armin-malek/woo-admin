@@ -79,6 +79,8 @@ export default async function handler(req, res) {
         `./uploads/${fileName}`,
         `${process.env.FTP_UPLOAD_DIR}${fileName}`
       );
+      client.close();
+
       console.log("upload done");
       await fs.promises.unlink(`./uploads/${fileName}`);
     }
