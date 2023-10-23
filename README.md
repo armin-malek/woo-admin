@@ -1,28 +1,25 @@
-# Create T3 App
+# Woo Admin
+> An alternative Woocommerce Admin Panel that is easy to use, minimal, and mobile-friendly
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+### Features
+- Simple to set up, it’s just a NextJS project Hit deploy and it's done!
+- it can work with numerous SQL databases out of the box (defaults to SQLite)
+- Create, View, Edit, and Delete your Woocommerce Products
+- Easily Manage your orders
+- Basic dashboard for information about the status of the shop🤷
 
-## What's next? How do I make an app with this?
+### Why?
+The WordPress admin panel is just too crowded and shop owners tend to get lost, what they need is to manage their products and orders, and Woo Admin was the simplest solution I could think of.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
-
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
-
-## Learn More
-
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### DataBase?
+saving the API keys in local storage didn't seem to be a great idea, so a simple database to hold the keys and authenticate the users was the way to go.
+al though it defaults to a SQLite database thanks to the Prisma ORM it can work with
+- PostgreSQL
+- MySQL
+- MariaDB
+- PlanetScale
+- SQLite
+- AWS Aurora
+- Microsoft SQL Server
+- Azure SQL
+- CockroachDB
