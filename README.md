@@ -13,7 +13,7 @@ The WordPress admin panel is just too crowded and shop owners tend to get lost, 
 
 ### DataBase?
 saving the API keys in local storage didn't seem to be a great idea, so a simple database to hold the keys and authenticate the users was the way to go.
-al though it defaults to a SQLite database thanks to the Prisma ORM it can work with
+although it defaults to a SQLite database thanks to the Prisma ORM it can work with
 - PostgreSQL
 - MySQL
 - MariaDB
